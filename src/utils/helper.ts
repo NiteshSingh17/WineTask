@@ -1,6 +1,7 @@
 import { TableDataType, WineDataType } from "../types";
 import { WINE_DATA } from "./data";
 
+// return Wine Data grouped by class 
 const getGroupAlcohol = (): Map<number, Array<WineDataType>> => {
     let groupData: Map<number, Array<WineDataType>> = new Map;
     for(let i in WINE_DATA){
@@ -16,6 +17,7 @@ const getGroupAlcohol = (): Map<number, Array<WineDataType>> => {
     return groupData;
 }
 
+// return data for Flavanoids Table
 export const getFlavanoidsTableData = () : Array<TableDataType> => {
     const GroupAlcoholData = getGroupAlcohol();
     let tableData: Array<TableDataType> = [];
@@ -32,12 +34,12 @@ export const getFlavanoidsTableData = () : Array<TableDataType> => {
 }
 
 
+// return data for Gamma Table
 export const getGammaTableData = () : Array<TableDataType> => {
     const GroupAlcoholData = getGroupAlcohol();
     let tableData: Array<TableDataType> = [];
     for (const [key, value] of GroupAlcoholData.entries()) {
         let gammas = value.map(f => convertToGamma(f));
-        // console.log("gammas",gammas)
         tableData.push({
             className: String(key),
             mean: calculateMean(gammas),
@@ -48,11 +50,13 @@ export const getGammaTableData = () : Array<TableDataType> => {
     return tableData;
 }
 
-
+// convert return Gama value based on Wine Data Ash , Hue and Magnesium
 const convertToGamma = (data: WineDataType) : number => {
     return (data.Ash * data.Hue) / data.Magnesium
 }
 
+
+// utils mean, median functions
 const calculateMean = (array: Array<number>) : string => {
     let sum : number = array.reduce( (pre,next) => pre + next,0);
     return parseFloat((sum / array.length ) + '').toFixed(3);
@@ -60,8 +64,6 @@ const calculateMean = (array: Array<number>) : string => {
 const calculateMedian = (array: Array<number>) : string => {
     return parseFloat((array.length % 2 === 1 ? array[ (array.length - 1) / 2 ] : (array[ (array.length / 2)  - 1 ] +  array[ (array.length / 2)  + 1 ]) / 2) + '').toFixed(3);
 }   
-
-
 const calculateMode = (array: Array<number>) : Array<string> => {
     let counts:  {
         [key: string]: number;
@@ -69,6 +71,7 @@ const calculateMode = (array: Array<number>) : Array<string> => {
     let maxCount = Math.max(...Object.values(counts));
     let maxMedians: Array<string> = [];
     Object.keys(counts).map( (k : any) => {
+        // if multiple class have same max number of occurence than return all
         if(counts[k] === maxCount ){
             maxMedians.push(parseFloat(k).toFixed(3));
         }
